@@ -28,8 +28,11 @@
 #include "long-options.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
+
+// 程序名
 #define PROGRAM_NAME "yes"
 
+// 作者
 #define AUTHORS proper_name ("David MacKenzie")
 
 void
