@@ -56,6 +56,7 @@ Repeatedly output a line with all specified STRING(s), or 'y'.\n\
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
       emit_ancillary_info (PROGRAM_NAME);
     }
+
   exit (status);
 }
 
