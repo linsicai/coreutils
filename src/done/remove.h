@@ -32,9 +32,11 @@ enum rm_interactive
 struct rm_options
 {
   /* If true, ignore nonexistent files.  */
+  // 忽略缺失文件
   bool ignore_missing_files;
 
   /* If true, query the user about whether to remove each file.  */
+  // 删除文件前是否需要确认
   enum rm_interactive interactive;
 
   // FIXME: remove
@@ -50,6 +52,7 @@ struct rm_options
   bool recursive;
 
   /* If true, remove empty directories.  */
+  // 删除空目录
   bool remove_empty_directories;
 
   /* Pointer to the device and inode numbers of '/', when --recursive
@@ -83,6 +86,7 @@ enum RM_status
 # define VALID_STATUS(S) \
   ((S) == RM_OK || (S) == RM_USER_DECLINED || (S) == RM_ERROR)
 
+// 更新状态
 # define UPDATE_STATUS(S, New_value)				\
   do								\
     {								\

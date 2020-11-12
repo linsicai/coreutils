@@ -34,6 +34,7 @@ find_mount_point (char const *file, struct stat const *file_stat)
   struct stat last_stat;
   char *mp = NULL;		/* The malloc'd mount point.  */
 
+  // 获取cwd
   if (save_cwd (&cwd) != 0)
     {
       error (0, errno, _("cannot get current directory"));
@@ -43,6 +44,7 @@ find_mount_point (char const *file, struct stat const *file_stat)
   if (S_ISDIR (file_stat->st_mode))
     /* FILE is a directory, so just chdir there directly.  */
     {
+      // 如果是目录，变更目录
       last_stat = *file_stat;
       if (chdir (file) < 0)
         {
@@ -75,6 +77,7 @@ find_mount_point (char const *file, struct stat const *file_stat)
   /* Now walk up FILE's parents until we find another file system or /,
      chdiring as we go.  LAST_STAT holds stat information for the last place
      we visited.  */
+  // 一直向上走
   while (true)
     {
       struct stat st;

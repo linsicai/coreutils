@@ -65,6 +65,7 @@ specified by the sum of their values.\n\
    hours, or 'd' for days.  If SUFFIX_CHAR is invalid, don't modify *X
    and return false.  Otherwise return true.  */
 
+// 解析时间
 static bool
 apply_suffix (double *x, char suffix_char)
 {
@@ -120,16 +121,20 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
+  // 把时间取出来，计总数，然后休眠
   for (i = optind; i < argc; i++)
     {
       double s;
       const char *p;
       if (! (xstrtod (argv[i], &p, &s, c_strtod) || errno == ERANGE)
           /* Nonnegative interval.  */
+          // 负数
           || ! (0 <= s)
           /* No extra chars after the number and an optional s,m,h,d char.  */
+          // 没有到字符串结束，说明可能有单位，前面还有，不支持两个字符
           || (*p && *(p+1))
           /* Check any suffix char and update S based on the suffix.  */
+          // 解析时间出错
           || ! apply_suffix (&s, *p))
         {
           error (0, 0, _("invalid time interval %s"), quote (argv[i]));

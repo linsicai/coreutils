@@ -86,6 +86,7 @@ main (int argc, char **argv)
 
   enum nproc_query mode = NPROC_CURRENT_OVERRIDABLE;
 
+  // 读取参数
   while (1)
     {
       int c = getopt_long (argc, argv, "", longopts, NULL);
@@ -110,6 +111,7 @@ main (int argc, char **argv)
         }
     }
 
+  // 多余参数
   if (argc != optind)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
@@ -118,6 +120,7 @@ main (int argc, char **argv)
 
   nproc = num_processors (mode);
 
+  // 计算剩余处理器数目
   if (ignore < nproc)
     nproc -= ignore;
   else

@@ -23,29 +23,40 @@
 enum Change_status
 {
   CH_NOT_APPLIED = 1,
+
+  // 成功
   CH_SUCCEEDED,
+
+  // 失败
   CH_FAILED,
+
+  // 没有变化
   CH_NO_CHANGE_REQUESTED
 };
 
 enum Verbosity
 {
   /* Print a message for each file that is processed.  */
+  // 最细节
   V_high,
 
   /* Print a message for each file whose attributes we change.  */
+  // 仅更新
   V_changes_only,
 
   /* Do not be verbose.  This is the default. */
+  // 关闭
   V_off
 };
 
 struct Chown_option
 {
   /* Level of verbosity.  */
+  // 日志等级
   enum Verbosity verbosity;
 
   /* If nonzero, change the ownership of directories recursively. */
+  // 递归
   bool recurse;
 
   /* Pointer to the device and inode numbers of '/', when --recursive.
@@ -56,6 +67,7 @@ struct Chown_option
   bool affect_symlink_referent;
 
   /* If nonzero, force silence (no error messages). */
+  // 静音
   bool force_silent;
 
   /* The name of the user to which ownership of the files is being given. */

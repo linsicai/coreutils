@@ -77,7 +77,9 @@ Examples:\n\
 int
 main (int argc, char **argv)
 {
+  // 当前目录
   static char const dot = '.';
+
   bool use_nuls = false;
   char const *result;
   size_t len;
@@ -90,6 +92,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
+  // 解析参数
   while (true)
     {
       int c = getopt_long (argc, argv, "z", longopts, NULL);
@@ -111,6 +114,7 @@ main (int argc, char **argv)
         }
     }
 
+  // 缺少参数
   if (argc < optind + 1)
     {
       error (0, 0, _("missing operand"));
@@ -119,15 +123,18 @@ main (int argc, char **argv)
 
   for (; optind < argc; optind++)
     {
+      // 找目录
       result = argv[optind];
       len = dir_len (result);
 
+      // 找目录失败，默认为当前目录
       if (! len)
         {
           result = &dot;
           len = 1;
         }
 
+      // 输出
       fwrite (result, 1, len, stdout);
       putchar (use_nuls ? '\0' :'\n');
     }

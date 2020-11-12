@@ -15,18 +15,23 @@ struct fiemap_extent
 {
   /* Logical offset in bytes for the start of the extent
      from the beginning of the file.  */
+  // 逻辑偏移量
   uint64_t fe_logical;
 
   /* Physical offset in bytes for the start of the extent
      from the beginning of the disk.  */
+  // 物理偏移量
   uint64_t fe_physical;
 
   /* Length in bytes for this extent.  */
+  // 总长度
   uint64_t fe_length;
 
+  // 保留字段
   uint64_t fe_reserved64[2];
 
   /* FIEMAP_EXTENT_* flags for this extent.  */
+  // 标志
   uint32_t fe_flags;
 
   uint32_t fe_reserved[3];

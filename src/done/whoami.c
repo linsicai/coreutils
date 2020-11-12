@@ -69,11 +69,13 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
+  // 解析参数
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, Version,
                       usage, AUTHORS, (char const *) NULL);
   if (getopt_long (argc, argv, "", NULL, NULL) != -1)
     usage (EXIT_FAILURE);
 
+  // 参数错误
   if (optind != argc)
     {
       error (0, 0, _("extra operand %s"), quote (argv[optind]));
@@ -81,11 +83,20 @@ main (int argc, char **argv)
     }
 
   errno = 0;
-  uid = geteuid ();
+
+  // 获取当前进程有效uid
+  uid = geteuid();
+
+  // 获取uid 的用户名和密码
   pw = (uid == NO_UID && errno ? NULL : getpwuid (uid));
+
+  // 获取失败
   if (!pw)
     error (EXIT_FAILURE, errno, _("cannot find name for user ID %lu"),
            (unsigned long int) uid);
+
+  // 打印用户名
   puts (pw->pw_name);
+
   return EXIT_SUCCESS;
 }

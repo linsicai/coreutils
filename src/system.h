@@ -346,6 +346,7 @@ enum
 "the version described here.  Please refer to your shell's documentation\n" \
 "for details about the options it supports.\n")
 
+// 帮助与版本
 #define HELP_OPTION_DESCRIPTION \
   _("      --help     display this help and exit\n")
 #define VERSION_OPTION_DESCRIPTION \

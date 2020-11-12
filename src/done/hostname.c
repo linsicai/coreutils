@@ -1,6 +1,5 @@
-/* print the hexadecimal identifier for the current host
-
-   Copyright (C) 1997-2016 Free Software Foundation, Inc.
+/* hostname - set or print the name of current host system
+   Copyright (C) 1994-2016 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -26,11 +25,26 @@
 #include "long-options.h"
 #include "error.h"
 #include "quote.h"
+#include "xgethostname.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "hostid"
+#define PROGRAM_NAME "hostname"
 
 #define AUTHORS proper_name ("Jim Meyering")
+
+#if !defined HAVE_SETHOSTNAME && defined HAVE_SYSINFO && \
+     defined HAVE_SYS_SYSTEMINFO_H
+# include <sys/systeminfo.h>
+
+static int
+sethostname (char *name, size_t namelen)
+{
+  /* Using sysinfo() is the SVR4 mechanism to set a hostname. */
+  return (sysinfo (SI_SET_HOSTNAME, name, namelen) < 0 ? -1 : 0);
+}
+
+# define HAVE_SETHOSTNAME 1  /* Now we have it... */
+#endif
 
 void
 usage (int status)
@@ -40,10 +54,12 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s [OPTION]\n\
-Print the numeric identifier (in hexadecimal) for the current host.\n\
+Usage: %s [NAME]\n\
+  or:  %s OPTION\n\
+Print or set the hostname of the current system.\n\
 \n\
-"), program_name);
+"),
+             program_name, program_name);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -54,7 +70,7 @@ Print the numeric identifier (in hexadecimal) for the current host.\n\
 int
 main (int argc, char **argv)
 {
-  unsigned int id;
+  char *hostname;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -69,20 +85,36 @@ main (int argc, char **argv)
   if (getopt_long (argc, argv, "", NULL, NULL) != -1)
     usage (EXIT_FAILURE);
 
-  if (optind < argc)
+  if (argc == optind + 1)
     {
-      error (0, 0, _("extra operand %s"), quote (argv[optind]));
-      usage (EXIT_FAILURE);
+    // 设置主机名
+#ifdef HAVE_SETHOSTNAME
+      /* Set hostname to operand.  */
+      char const *name = argv[optind];
+      if (sethostname (name, strlen (name)) != 0)
+        error (EXIT_FAILURE, errno, _("cannot set name to %s"),
+               quote (name));
+#else
+      error (EXIT_FAILURE, 0,
+             _("cannot set hostname; this system lacks the functionality"));
+#endif
     }
 
-  id = gethostid ();
+  // 获取主机名
+  if (argc <= optind)
+    {
+      hostname = xgethostname ();
+      if (hostname == NULL)
+        error (EXIT_FAILURE, errno, _("cannot determine hostname"));
+      printf ("%s\n", hostname);
+    }
 
-  /* POSIX says gethostid returns a "32-bit identifier" but is silent
-     whether it's sign-extended.  Turn off any sign-extension.  This
-     is a no-op unless unsigned int is wider than 32 bits.  */
-  id &= 0xffffffff;
-
-  printf ("%08x\n", id);
+  // 多余参数
+  if (optind + 1 < argc)
+    {
+      error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
+      usage (EXIT_FAILURE);
+    }
 
   return EXIT_SUCCESS;
 }

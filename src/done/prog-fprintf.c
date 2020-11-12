@@ -28,10 +28,16 @@ void
 prog_fprintf (FILE *fp, char const *fmt, ...)
 {
   va_list ap;
+
+  // 程序名称
   fputs (program_name, fp);
   fputs (": ", fp);
+
+  // 内容
   va_start (ap, fmt);
   vfprintf (fp, fmt, ap);
   va_end (ap);
+
+  // 换行符
   fputc ('\n', fp);
 }

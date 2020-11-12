@@ -50,6 +50,7 @@ operand2sig (char const *operand, char *signame)
          wider exit status values as discussed at
          http://austingroupbugs.net/view.php?id=947  */
 
+      // 解析数字
       char *endp;
       long int l = (errno = 0, strtol (operand, &endp, 10));
       int i = l;
@@ -60,6 +61,7 @@ operand2sig (char const *operand, char *signame)
     {
       /* Convert signal to upper case in the C locale, not in the
          current locale.  Don't assume ASCII; it might be EBCDIC.  */
+      // 解析信号名称
       char *upcased = xstrdup (operand);
       char *p;
       for (p = upcased; *p; p++)
@@ -76,6 +78,7 @@ operand2sig (char const *operand, char *signame)
       free (upcased);
     }
 
+  // 信号数字转名称
   if (signum < 0 || sig2str (signum, signame) != 0)
     {
       error (0, 0, _("%s: invalid signal"), quote (operand));

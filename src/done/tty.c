@@ -111,6 +111,7 @@ main (int argc, char **argv)
   if (optind < argc)
     error (0, 0, _("extra operand %s"), quote (argv[optind]));
 
+  // 获取tty 名称
   tty = ttyname (STDIN_FILENO);
   if (!silent)
     {
@@ -120,5 +121,6 @@ main (int argc, char **argv)
         puts (_("not a tty"));
     }
 
+  // 是tty，返回0
   return isatty (STDIN_FILENO) ? EXIT_SUCCESS : EXIT_FAILURE;
 }

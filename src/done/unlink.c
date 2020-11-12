@@ -1,4 +1,4 @@
-/* link utility for GNU.
+/* unlink utility for GNU.
    Copyright (C) 2001-2016 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
@@ -18,7 +18,7 @@
 
 /* Implementation overview:
 
-   Simply call the system 'link' function */
+   Simply call the system 'unlink' function */
 
 #include <config.h>
 #include <stdio.h>
@@ -31,7 +31,7 @@
 #include "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "link"
+#define PROGRAM_NAME "unlink"
 
 #define AUTHORS proper_name ("Michael Stone")
 
@@ -43,10 +43,9 @@ usage (int status)
   else
     {
       printf (_("\
-Usage: %s FILE1 FILE2\n\
+Usage: %s FILE\n\
   or:  %s OPTION\n"), program_name, program_name);
-      fputs (_("Call the link function to create a link named FILE2\
- to an existing FILE1.\n\n"),
+      fputs (_("Call the unlink function to remove the specified FILE.\n\n"),
              stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
@@ -71,24 +70,20 @@ main (int argc, char **argv)
   if (getopt_long (argc, argv, "", NULL, NULL) != -1)
     usage (EXIT_FAILURE);
 
-  if (argc < optind + 2)
+  // 参数调用
+  if (argc < optind + 1)
     {
-      if (argc < optind + 1)
-        error (0, 0, _("missing operand"));
-      else
-        error (0, 0, _("missing operand after %s"), quote (argv[optind]));
+      error (0, 0, _("missing operand"));
+      usage (EXIT_FAILURE);
+    }
+  if (optind + 1 < argc)
+    {
+      error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 2 < argc)
-    {
-      error (0, 0, _("extra operand %s"), quote (argv[optind + 2]));
-      usage (EXIT_FAILURE);
-    }
-
-  if (link (argv[optind], argv[optind + 1]) != 0)
-    error (EXIT_FAILURE, errno, _("cannot create link %s to %s"),
-           quoteaf_n (0, argv[optind + 1]), quoteaf_n (1, argv[optind]));
+  if (unlink (argv[optind]) != 0)
+    error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
 
   return EXIT_SUCCESS;
 }

@@ -1,5 +1,5 @@
-/* unlink utility for GNU.
-   Copyright (C) 2001-2016 Free Software Foundation, Inc.
+/* logname -- print user's login name
+   Copyright (C) 1990-2016 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,16 +14,10 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-/* Written by Michael Stone */
-
-/* Implementation overview:
-
-   Simply call the system 'unlink' function */
-
 #include <config.h>
 #include <stdio.h>
-#include <getopt.h>
 #include <sys/types.h>
+#include <getopt.h>
 
 #include "system.h"
 #include "error.h"
@@ -31,9 +25,9 @@
 #include "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "unlink"
+#define PROGRAM_NAME "logname"
 
-#define AUTHORS proper_name ("Michael Stone")
+#define AUTHORS proper_name ("FIXME: unknown")
 
 void
 usage (int status)
@@ -42,11 +36,11 @@ usage (int status)
     emit_try_help ();
   else
     {
-      printf (_("\
-Usage: %s FILE\n\
-  or:  %s OPTION\n"), program_name, program_name);
-      fputs (_("Call the unlink function to remove the specified FILE.\n\n"),
-             stdout);
+      printf (_("Usage: %s [OPTION]\n"), program_name);
+      fputs (_("\
+Print the name of the current user.\n\
+\n\
+"), stdout);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -57,6 +51,8 @@ Usage: %s FILE\n\
 int
 main (int argc, char **argv)
 {
+  char *cp;
+
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
   setlocale (LC_ALL, "");
@@ -70,20 +66,19 @@ main (int argc, char **argv)
   if (getopt_long (argc, argv, "", NULL, NULL) != -1)
     usage (EXIT_FAILURE);
 
-  if (argc < optind + 1)
+  if (optind < argc)
     {
-      error (0, 0, _("missing operand"));
+      error (0, 0, _("extra operand %s"), quote (argv[optind]));
       usage (EXIT_FAILURE);
     }
 
-  if (optind + 1 < argc)
-    {
-      error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
-      usage (EXIT_FAILURE);
-    }
+  /* POSIX requires using getlogin (or equivalent code) and prohibits
+     using a fallback technique.  */
+  // 获取登陆名称
+  cp = getlogin ();
+  if (! cp)
+    error (EXIT_FAILURE, 0, _("no login name"));
 
-  if (unlink (argv[optind]) != 0)
-    error (EXIT_FAILURE, errno, _("cannot unlink %s"), quoteaf (argv[optind]));
-
+  puts (cp);
   return EXIT_SUCCESS;
 }

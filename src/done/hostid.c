@@ -1,5 +1,6 @@
-/* logname -- print user's login name
-   Copyright (C) 1990-2016 Free Software Foundation, Inc.
+/* print the hexadecimal identifier for the current host
+
+   Copyright (C) 1997-2016 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -14,20 +15,22 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
+/* Written by Jim Meyering.  */
+
 #include <config.h>
+#include <getopt.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <getopt.h>
 
 #include "system.h"
-#include "error.h"
 #include "long-options.h"
+#include "error.h"
 #include "quote.h"
 
 /* The official name of this program (e.g., no 'g' prefix).  */
-#define PROGRAM_NAME "logname"
+#define PROGRAM_NAME "hostid"
 
-#define AUTHORS proper_name ("FIXME: unknown")
+#define AUTHORS proper_name ("Jim Meyering")
 
 void
 usage (int status)
@@ -36,11 +39,11 @@ usage (int status)
     emit_try_help ();
   else
     {
-      printf (_("Usage: %s [OPTION]\n"), program_name);
-      fputs (_("\
-Print the name of the current user.\n\
+      printf (_("\
+Usage: %s [OPTION]\n\
+Print the numeric identifier (in hexadecimal) for the current host.\n\
 \n\
-"), stdout);
+"), program_name);
       fputs (HELP_OPTION_DESCRIPTION, stdout);
       fputs (VERSION_OPTION_DESCRIPTION, stdout);
       emit_ancillary_info (PROGRAM_NAME);
@@ -51,7 +54,7 @@ Print the name of the current user.\n\
 int
 main (int argc, char **argv)
 {
-  char *cp;
+  unsigned int id;
 
   initialize_main (&argc, &argv);
   set_program_name (argv[0]);
@@ -72,12 +75,15 @@ main (int argc, char **argv)
       usage (EXIT_FAILURE);
     }
 
-  /* POSIX requires using getlogin (or equivalent code) and prohibits
-     using a fallback technique.  */
-  cp = getlogin ();
-  if (! cp)
-    error (EXIT_FAILURE, 0, _("no login name"));
+  // 获取主机id，打印
+  id = gethostid ();
 
-  puts (cp);
+  /* POSIX says gethostid returns a "32-bit identifier" but is silent
+     whether it's sign-extended.  Turn off any sign-extension.  This
+     is a no-op unless unsigned int is wider than 32 bits.  */
+  id &= 0xffffffff;
+
+  printf ("%08x\n", id);
+
   return EXIT_SUCCESS;
 }

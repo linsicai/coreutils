@@ -17,6 +17,7 @@
 #ifndef SET_FIELDS_H
 # define SET_FIELDS_H
 
+// 字段范围
 struct field_range_pair
   {
     size_t lo;
@@ -33,7 +34,9 @@ extern size_t n_frp;
 enum
 {
   SETFLD_ALLOW_DASH = 0x01,     /* allow single dash meaning 'all fields' */
+
   SETFLD_COMPLEMENT = 0x02,     /* complement the field list */
+
   SETFLD_ERRMSG_USE_POS = 0x04  /* when reporting errors, say 'position' instead
                                    of 'field' (used with cut -b/-c) */
 };

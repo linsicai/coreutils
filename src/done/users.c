@@ -50,6 +50,7 @@ list_entries_users (size_t n, const STRUCT_UTMP *this)
   size_t i;
   size_t n_entries = 0;
 
+  // 抽取用户名称
   while (n--)
     {
       if (IS_USER_PROCESS (this))
@@ -64,8 +65,10 @@ list_entries_users (size_t n, const STRUCT_UTMP *this)
       this++;
     }
 
+  // 排序
   qsort (u, n_entries, sizeof (u[0]), userid_compare);
 
+  // 打印
   for (i = 0; i < n_entries; i++)
     {
       char c = (i < n_entries - 1 ? ' ' : '\n');
@@ -73,6 +76,7 @@ list_entries_users (size_t n, const STRUCT_UTMP *this)
       putchar (c);
     }
 
+  // 释放内存
   for (i = 0; i < n_entries; i++)
     free (u[i]);
   free (u);
@@ -87,9 +91,11 @@ users (const char *filename, int options)
   size_t n_users;
   STRUCT_UTMP *utmp_buf;
 
+  // 读取用户
   if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
 
+  // 展示用户信息
   list_entries_users (n_users, utmp_buf);
 
   free (utmp_buf);
@@ -127,6 +133,7 @@ main (int argc, char **argv)
 
   atexit (close_stdout);
 
+  // 解析参数
   parse_long_options (argc, argv, PROGRAM_NAME, PACKAGE_NAME, Version,
                       usage, AUTHORS, (char const *) NULL);
   if (getopt_long (argc, argv, "", NULL, NULL) != -1)
@@ -143,6 +150,7 @@ main (int argc, char **argv)
       break;
 
     default:			/* lose */
+      // 未知参数
       error (0, 0, _("extra operand %s"), quote (argv[optind + 1]));
       usage (EXIT_FAILURE);
     }

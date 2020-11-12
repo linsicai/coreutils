@@ -40,6 +40,7 @@ print_group_list (const char *username,
   bool ok = true;
   struct passwd *pwd = NULL;
 
+  // 获取用户信息
   if (username)
     {
       pwd = getpwuid (ruid);
@@ -47,6 +48,7 @@ print_group_list (const char *username,
         ok = false;
     }
 
+  // 打印组信息
   if (!print_group (rgid, use_names))
     ok = false;
 
@@ -61,6 +63,7 @@ print_group_list (const char *username,
     gid_t *groups;
     int i;
 
+    // 获取用户组数目
     int n_groups = xgetgroups (username, (pwd ? pwd->pw_gid : egid), &groups);
     if (n_groups < 0)
       {
@@ -76,6 +79,7 @@ print_group_list (const char *username,
         return false;
       }
 
+    // 打印组信息
     for (i = 0; i < n_groups; i++)
       if (groups[i] != rgid && groups[i] != egid)
         {
@@ -106,6 +110,7 @@ print_group (gid_t gid, bool use_name)
   struct group *grp = NULL;
   bool ok = true;
 
+  // 获取组信息，如果需要显示组名称的话
   if (use_name)
     {
       grp = getgrgid (gid);

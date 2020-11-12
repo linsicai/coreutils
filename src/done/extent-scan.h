@@ -20,38 +20,49 @@
 # define EXTENT_SCAN_H
 
 /* Structure used to store information of each extent.  */
+// 扩展信息
 struct extent_info
 {
   /* Logical offset of an extent.  */
+  // 偏移量
   off_t ext_logical;
 
   /* Extent length.  */
+  // 长度
   off_t ext_length;
 
   /* Extent flags, use it for FIEMAP only, or set it to zero.  */
+  // 标志位
   unsigned int ext_flags;
 };
 
 /* Structure used to reserve extent scan information per file.  */
+// 扫描信息
 struct extent_scan
 {
   /* File descriptor of extent scan run against.  */
+  // 文件
   int fd;
 
   /* Next scan start offset.  */
+  // 偏移量
   off_t scan_start;
 
   /* Flags to use for scan.  */
+  // 标志位
   unsigned int fm_flags;
 
   /* How many extent info returned for a scan.  */
+  // 扩展块数目
   size_t ei_count;
 
   /* If true, fall back to a normal copy, either set by the
      failure of ioctl(2) for FIEMAP or lseek(2) with SEEK_DATA.  */
+  // 初始化失败位
   bool initial_scan_failed;
 
   /* If true, the total extent scan per file has been finished.  */
+  // 扫描结束位
   bool hit_final_extent;
 
   /* Extent information: a malloc'd array of ei_count structs.  */

@@ -58,6 +58,7 @@ main (int argc, char **argv)
      argument.  */
   if (argc == 2)
     {
+      // 帮助信息
       initialize_main (&argc, &argv);
       set_program_name (argv[0]);
       setlocale (LC_ALL, "");
@@ -76,5 +77,6 @@ main (int argc, char **argv)
                      (char *) NULL);
     }
 
+  // 返回退出标识
   return EXIT_STATUS;
 }

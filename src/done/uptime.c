@@ -59,6 +59,7 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
   struct tm *tmn;
   double avg[3];
   int loads;
+
 #ifdef HAVE_PROC_UPTIME
   FILE *fp;
 
@@ -66,10 +67,12 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
   if (fp != NULL)
     {
       char buf[BUFSIZ];
+      // 读文件
       char *b = fgets (buf, BUFSIZ, fp);
       if (b == buf)
         {
           char *end_ptr;
+          // 解析时间，校验时间
           double upsecs = c_strtod (buf, &end_ptr);
           if (buf != end_ptr)
             uptime = (0 <= upsecs && upsecs < TYPE_MAXIMUM (time_t)
@@ -81,6 +84,7 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
 #endif /* HAVE_PROC_UPTIME */
 
 #if HAVE_SYSCTL && defined CTL_KERN && defined KERN_BOOTTIME
+  // 通过系统命令，获取启动时间
   {
     /* FreeBSD specific: fetch sysctl "kern.boottime".  */
     static int request[2] = { CTL_KERN, KERN_BOOTTIME };
@@ -116,6 +120,7 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
   (void) this;
 #endif
 
+  // 修正uptime
   time_now = time (NULL);
 #if defined HAVE_PROC_UPTIME
   if (uptime == 0)
@@ -125,9 +130,13 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
         error (EXIT_FAILURE, errno, _("couldn't get boot time"));
       uptime = time_now - boot_time;
     }
+
+  // 计算up 天、小时、分钟
   updays = uptime / 86400;
   uphours = (uptime - (updays * 86400)) / 3600;
   upmins = (uptime - (updays * 86400) - (uphours * 3600)) / 60;
+
+  // 时区
   tmn = localtime (&time_now);
   /* procps' version of uptime also prints the seconds field, but
      previous versions of coreutils don't. */
@@ -136,6 +145,8 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
     fprintftime (stdout, _(" %H:%M%P  "), tmn, 0, 0);
   else
     printf (_(" ??:????  "));
+
+  // up 信息
   if (uptime == (time_t) -1)
     printf (_("up ???? days ??:??,  "));
   else
@@ -151,6 +162,7 @@ print_uptime (size_t n, const STRUCT_UTMP *this)
   printf (ngettext ("%lu user", "%lu users", select_plural (entries)),
           (unsigned long int) entries);
 
+  // 打印load 信息
   loads = getloadavg (avg, 3);
 
   if (loads == -1)
@@ -178,6 +190,7 @@ uptime (const char *filename, int options)
   size_t n_users;
   STRUCT_UTMP *utmp_buf = NULL;
 
+// 读取文件
 #if HAVE_UTMPX_H || HAVE_UTMP_H
   if (read_utmp (filename, &n_users, &utmp_buf, options) != 0)
     error (EXIT_FAILURE, errno, "%s", quotef (filename));
@@ -185,6 +198,7 @@ uptime (const char *filename, int options)
 
   print_uptime (n_users, utmp_buf);
 
+  // 释放资源
   IF_LINT (free (utmp_buf));
 }
 

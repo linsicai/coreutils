@@ -21,6 +21,7 @@
 
 /* Return true if ERR corresponds to an unsupported request,
    or if there is no context or it's inaccessible.  */
+// 可忽略的错误，不支持的请求或者无数据
 static inline bool
 ignorable_ctx_err (int err)
 {
